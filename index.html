@@ -1,0 +1,345 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EvenTion | Full Event Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* === FULL CSS STYLING === */
+        :root {
+            --primary-purple: #1e0b36;
+            --accent-pink: #ff0077;
+            --neon-green: #00ffcc;
+            --dark-bg: #0f051d;
+            --card-bg: #25133d;
+            --text-gold: #ffcc00;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: var(--dark-bg); color: white; scroll-behavior: smooth; }
+
+        /* Navigation */
+        header {
+            background: var(--primary-purple);
+            padding: 20px 8%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+        }
+        .logo { font-size: 2rem; font-weight: 900; color: var(--accent-pink); text-transform: uppercase; letter-spacing: 3px; }
+        nav ul { display: flex; list-style: none; align-items: center; }
+        nav ul li { margin-left: 25px; }
+        nav ul li a { color: white; text-decoration: none; font-weight: 600; transition: 0.3s; }
+        nav ul li a:hover { color: var(--accent-pink); }
+        
+        .cart-box {
+            background: var(--accent-pink);
+            padding: 8px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 60vh;
+            background: linear-gradient(rgba(15, 5, 29, 0.7), rgba(15, 5, 29, 0.7)), url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .hero h1 { font-size: 3.5rem; color: var(--text-gold); text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+
+        /* Services Grid - THE MEAT */
+        .services-section { padding: 60px 8%; }
+        .section-title { text-align: center; margin-bottom: 50px; font-size: 2.5rem; color: var(--text-gold); }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Responsive Fix for Mobile (Shopee Style 2-column) */
+        @media (max-width: 600px) {
+            .services-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .hero h1 { font-size: 2rem; }
+            .section-title { font-size: 1.5rem; }
+        }
+
+        .service-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #3d2263;
+            transition: 0.3s;
+            position: relative;
+        }
+        .service-card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(255, 0, 119, 0.3); }
+        
+        .service-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        
+        .badge {
+            position: absolute; top: 10px; left: 10px;
+            background: var(--accent-pink); color: white;
+            padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold;
+        }
+
+        .card-content { padding: 15px; }
+        .card-content h3 { font-size: 1.1rem; margin-bottom: 10px; color: white; height: 45px; overflow: hidden; }
+        .price-tag { color: var(--neon-green); font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; }
+        
+        .btn-add {
+            width: 100%; background: var(--accent-pink); color: white;
+            border: none; padding: 12px; border-radius: 8px;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .btn-add:hover { background: #ff3399; }
+
+        /* Modal System */
+        .modal {
+            display: none; position: fixed; z-index: 2000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: var(--primary-purple);
+            margin: 5% auto; padding: 30px;
+            width: 90%; max-width: 500px;
+            border-radius: 20px; border: 2px solid var(--accent-pink);
+            position: relative;
+            animation: slideDown 0.4s ease;
+        }
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .close-btn { position: absolute; right: 20px; top: 15px; font-size: 30px; cursor: pointer; }
+        
+        form label { display: block; margin-top: 15px; font-size: 0.8rem; color: #aaa; }
+        form input, form textarea {
+            width: 100%; padding: 12px; margin-top: 5px;
+            background: #2d1b4d; border: 1px solid #444;
+            color: white; border-radius: 8px;
+        }
+
+        .calendly-box {
+            margin-top: 20px; padding: 15px;
+            background: rgba(0, 107, 255, 0.1);
+            border: 1px dashed #006bff; border-radius: 10px; text-align: center;
+        }
+        .calendly-btn {
+            display: inline-block; margin-top: 10px;
+            color: #006bff; font-weight: bold; text-decoration: none;
+        }
+
+        .confirm-order-btn {
+            width: 100%; background: #28a745; color: white;
+            padding: 15px; border: none; border-radius: 8px;
+            margin-top: 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+        }
+
+        footer { text-align: center; padding: 50px; background: var(--primary-purple); margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">EvenTion</div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li>
+                    <div class="cart-box">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-counter">0</span>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <h1>Moments Made Perfect</h1>
+        <p>Your Ultimate Event Planning Partner</p>
+    </section>
+
+    <section class="services-section" id="services">
+        <h2 class="section-title">Our Premium Packages</h2>
+        
+        <div class="services-grid" id="main-grid">
+            <div class="service-card">
+                <div class="badge">BEST SELLER</div>
+                <img src="bday_elite.jpg" alt="Birthday Elite" onerror="this.src='https://via.placeholder.com/400?text=Birthday+Elite'">
+                <div class="card-content">
+                    <h3>Birthday Elite Package (Full Setup)</h3>
+                    <div class="price-tag">₱5,000.00</div>
+                    <button class="btn-add" onclick="openBooking('Birthday Elite Package', 5000)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <img src="bday_standard.jpg" alt="Birthday Standard" onerror="this.src='https://via.placeholder.com/400?text=Birthday+Standard'">
+                <div class="card-content">
+                    <h3>Birthday Standard Surprise</h3>
+                    <div class="price-tag">₱3,000.00</div>
+                    <button class="btn-add" onclick="openBooking('Birthday Standard Surprise', 3000)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div class="badge">SEASONAL</div>
+                <img src="val_premium1.jpg" alt="Valentine Premium" onerror="this.src='https://via.placeholder.com/400?text=Valentine+Premium'">
+                <div class="card-content">
+                    <h3>Valentine Premium Romantic Setup</h3>
+                    <div class="price-tag">₱3,500.00</div>
+                    <button class="btn-add" onclick="openBooking('Valentine Premium Setup', 3500)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <img src="val_sweet.jpg" alt="Valentine Sweet" onerror="this.src='https://via.placeholder.com/400?text=Valentine+Sweet'">
+                <div class="card-content">
+                    <h3>Valentine Sweet Heart Box</h3>
+                    <div class="price-tag">₱2,000.00</div>
+                    <button class="btn-add" onclick="openBooking('Valentine Sweet Box', 2000)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <img src="mom_special.jpg" alt="Mother's Day" onerror="this.src='https://via.placeholder.com/400?text=Mothers+Day'">
+                <div class="card-content">
+                    <h3>Mother's Day Deluxe Bouquet & Setup</h3>
+                    <div class="price-tag">₱4,500.00</div>
+                    <button class="btn-add" onclick="openBooking('Mother\'s Day Deluxe', 4500)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <img src="dad_special.jpg" alt="Father's Day" onerror="this.src='https://via.placeholder.com/400?text=Fathers+Day'">
+                <div class="card-content">
+                    <h3>Father's Day Classic Surprise Box</h3>
+                    <div class="price-tag">₱4,000.00</div>
+                    <button class="btn-add" onclick="openBooking('Father\'s Day Classic', 4000)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div class="badge">CUSTOM</div>
+                <img src="custom_event.jpg" alt="Custom Event" onerror="this.src='https://via.placeholder.com/400?text=Custom+Event'">
+                <div class="card-content">
+                    <h3>Custom Surprise Proposal Setup</h3>
+                    <div class="price-tag">₱7,500.00</div>
+                    <button class="btn-add" onclick="openBooking('Custom Proposal Setup', 7500)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <img src="anniv_set.jpg" alt="Anniversary" onerror="this.src='https://via.placeholder.com/400?text=Anniversary+Set'">
+                <div class="card-content">
+                    <h3>Intimate Anniversary Candle Dinner</h3>
+                    <div class="price-tag">₱6,000.00</div>
+                    <button class="btn-add" onclick="openBooking('Anniversary Dinner', 6000)">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="m-title" style="color: var(--text-gold);">Package Name</h2>
+            <p id="m-price" style="color: var(--neon-green); font-size: 1.5rem; font-weight: bold; margin-bottom: 15px;"></p>
+            
+            <hr style="border: 0; border-top: 1px solid #444;">
+
+            <form id="mainOrderForm">
+                <label>RECIPIENT FULL NAME</label>
+                <input type="text" id="r-name" placeholder="Who are we surprising?" required>
+
+                <label>EVENT DATE</label>
+                <input type="date" id="r-date" required>
+
+                <label>DELIVERY ADDRESS</label>
+                <textarea id="r-address" rows="3" placeholder="Exact location details" required></textarea>
+
+                <div class="calendly-box">
+                    <p style="font-size: 0.9rem;"><i class="fas fa-info-circle"></i> To finalize the time, please schedule below:</p>
+                    <a href="https://calendly.com/aivan-evention" target="_blank" class="calendly-btn">
+                        <i class="far fa-calendar-check"></i> CLICK TO SCHEDULE VIA CALENDLY
+                    </a>
+                </div>
+
+                <button type="submit" class="confirm-order-btn">CONFIRM AND ADD TO CART</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 EvenTion | Business Project by Aivan</p>
+        <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">Built with passion for event excellence.</p>
+    </footer>
+
+    <script>
+        let cartItems = 0;
+
+        // Function to open the modal with dynamic data
+        function openBooking(packageName, price) {
+            const modal = document.getElementById('bookingModal');
+            document.getElementById('m-title').innerText = packageName;
+            document.getElementById('m-price').innerText = "₱" + price.toLocaleString();
+            modal.style.display = 'block';
+            
+            // Log for debugging
+            console.log("Opening booking for: " + packageName);
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        // Close modal when user clicks outside the content box
+        window.onclick = function(event) {
+            const modal = document.getElementById('bookingModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Handle Form Submission
+        document.getElementById('mainOrderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 1. Get Values
+            const recipient = document.getElementById('r-name').value;
+            const date = document.getElementById('r-date').value;
+            const pkg = document.getElementById('m-title').innerText;
+
+            // 2. Update Cart UI
+            cartItems++;
+            document.getElementById('cart-counter').innerText = cartItems;
+
+            // 3. Feedback to user
+            alert("SUCCESS!\n\n" + pkg + " added for " + recipient + " on " + date + ".\n\nRedirecting to process details...");
+
+            // 4. Reset and Close
+            this.reset();
+            closeModal();
+        });
+
+        // Console log to confirm script loaded
+        console.log("EvenTion System Online. All packages initialized.");
+    </script>
+</body>
+</html>
