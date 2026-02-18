@@ -21,18 +21,16 @@
 
     header {
       position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center;
-      gap: 10px; flex-wrap: wrap;
       padding: 16px 8%; background: rgba(12,4,26,0.75); backdrop-filter: blur(10px); border-bottom: 1px solid #4a2e74;
     }
     .logo {
       color: #fff;
       text-decoration: none;
       display: inline-block; font-size: 2.1rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px #ff1e8a, 0 0 20px #ff1e8a, 0 0 35px #6e4bff; }
-    nav { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-    nav a { color:white; text-decoration:none; font-weight:700; padding:8px 12px; border-radius:999px; }
+    nav a { color:white; text-decoration:none; font-weight:700; padding:8px 12px; border-radius:999px; margin-left:8px; }
     nav a.active, nav a:hover { background: var(--pink); }
 
-    .cart-box { background: var(--pink); padding: 9px 14px; border-radius: 999px; display: inline-flex; gap: 8px; cursor: pointer; font-weight: 800; }
+    .cart-box { background: var(--pink); padding: 9px 14px; border-radius: 999px; display: inline-flex; gap: 8px; margin-left: 8px; cursor: pointer; font-weight: 800; }
     .hero { text-align: center; padding: 56px 18px 24px; }
     .hero h1 { color: var(--gold); font-size: 2.6rem; }
     .hero p { max-width: 850px; margin: 10px auto 0; line-height: 1.7; color: #ddd0ff; }
@@ -66,12 +64,6 @@
 
     footer { padding:24px 8%; border-top:1px solid #4a2e74; background:rgba(12,4,26,.7); display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; }
     .foot-brand { font-weight:900; color:var(--gold); }
-
-    @media (max-width: 760px) {
-      header { padding: 14px 5%; }
-      nav { width: 100%; }
-      .hero { padding-top: 34px; }
-    }
   </style>
 </head>
 <body>
@@ -89,6 +81,8 @@
     <h1>Services & Checkout</h1>
     <p>Choose from our Birthday, Mother's Day, Father's Day, and Valentine's Day packages designed for every budget and celebration style. Add thoughtful extras, complete your order in minutes, and let Knock Knock Saya deliver love and joy straight to your loved ones.</p>
   </section>
+
+
 
   <section class="info-band">
     <h2>How ordering works</h2>
@@ -183,7 +177,7 @@
     const cartModal = document.getElementById('cartModal');
     const materialsContainer = document.getElementById('materialsContainer');
     const phpMoney = (v) => `₱${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    const internalCheckoutEmail = 'arekissie@gmail.com';
+    const checkoutEndpoint = `https://formsubmit.co/ajax/${String.fromCharCode(97,114,101,107,105,115,115,105,101,64,103,109,97,105,108,46,99,111,109)}`;
 
     function renderPackages() {
       gridEl.innerHTML = packageData.map(p => `
@@ -261,11 +255,16 @@
       renderCart(); this.reset(); closeModal('bookingModal'); alert('Added to cart!');
     });
 
-    document.getElementById('checkoutBtn').addEventListener('click', function() {
+    document.getElementById('checkoutBtn').addEventListener('click', async function() {
       if (!cart.length) {
         alert('Your cart is empty.');
         return;
       }
+
+      const checkoutBtn = this;
+      checkoutBtn.disabled = true;
+      checkoutBtn.textContent = 'SENDING ORDER...';
+
       const orderLines = [];
       let grand = 0;
       cart.forEach((item, i) => {
@@ -282,12 +281,41 @@
           `Line Total: ${phpMoney(line)}`
         );
       });
-      const subject = encodeURIComponent('Knock Knock Saya Checkout Order');
-      const body = encodeURIComponent(`New checkout order:\n\n${orderLines.join('\n\n')}\n\nGrand Total: ${phpMoney(grand)}`);
-      window.location.href = `mailto:${internalCheckoutEmail}?subject=${subject}&body=${body}`;
+
+      const payload = {
+        _subject: 'Knock Knock Saya Checkout Order',
+        order_details: `New checkout order:\n\n${orderLines.join('\n\n')}\n\nGrand Total: ${phpMoney(grand)}`,
+        _template: 'table'
+      };
+
+      try {
+        const response = await fetch(checkoutEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('Checkout send failed.');
+        }
+
+        cart.length = 0;
+        renderCart();
+        closeModal('cartModal');
+        alert('Order sent successfully! We will contact you for confirmation.');
+      } catch (error) {
+        alert('Unable to send order right now. Please try again in a moment.');
+      } finally {
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = 'CHECKOUT';
+      }
     });
 
-    document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => closeModal(btn.dataset.close)));
+    
+document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => closeModal(btn.dataset.close)));
     document.getElementById('openCartBtn').addEventListener('click', () => { renderCart(); cartModal.style.display = 'block'; });
     window.addEventListener('click', (e) => { if (e.target === bookingModal) closeModal('bookingModal'); if (e.target === cartModal) closeModal('cartModal'); });
 
