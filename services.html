@@ -21,15 +21,25 @@
 
     header {
       position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap;
       padding: 16px 8%; background: rgba(12,4,26,0.75); backdrop-filter: blur(10px); border-bottom: 1px solid #4a2e74;
     }
-    .logo { font-size: 2.1rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px #ff1e8a, 0 0 20px #ff1e8a, 0 0 35px #6e4bff; }
-    nav a { color:white; text-decoration:none; font-weight:700; padding:8px 12px; border-radius:999px; margin-left:8px; }
+    .logo {
+      color: #fff;
+      text-decoration: none;
+      display: inline-block; font-size: 2.1rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px #ff1e8a, 0 0 20px #ff1e8a, 0 0 35px #6e4bff; }
+    nav { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    nav a { color:white; text-decoration:none; font-weight:700; padding:8px 12px; border-radius:999px; }
     nav a.active, nav a:hover { background: var(--pink); }
 
-    .cart-box { background: var(--pink); padding: 9px 14px; border-radius: 999px; display: inline-flex; gap: 8px; margin-left: 8px; cursor: pointer; font-weight: 800; }
+    .cart-box { background: var(--pink); padding: 9px 14px; border-radius: 999px; display: inline-flex; gap: 8px; cursor: pointer; font-weight: 800; }
     .hero { text-align: center; padding: 56px 18px 24px; }
     .hero h1 { color: var(--gold); font-size: 2.6rem; }
+    .hero p { max-width: 850px; margin: 10px auto 0; line-height: 1.7; color: #ddd0ff; }
+
+    .info-band { margin: 0 8% 12px; background: rgba(38,17,71,.75); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+    .info-band h2 { color: var(--gold); margin-bottom: 8px; font-size: 1.2rem; }
+    .info-band p { color:#e8ddff; line-height:1.6; }
 
     .grid { padding: 12px 8% 58px; display:grid; gap:18px; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); }
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; position: relative; }
@@ -56,11 +66,17 @@
 
     footer { padding:24px 8%; border-top:1px solid #4a2e74; background:rgba(12,4,26,.7); display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; }
     .foot-brand { font-weight:900; color:var(--gold); }
+
+    @media (max-width: 760px) {
+      header { padding: 14px 5%; }
+      nav { width: 100%; }
+      .hero { padding-top: 34px; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo">Knock Knock Saya</div>
+    <a class="logo" href="index.html" aria-label="Knock Knock Saya Home">Knock Knock Saya</a>
     <nav>
       <a href="index.html">Home</a>
       <a class="active" href="services.html">Services</a>
@@ -71,7 +87,12 @@
 
   <section class="hero">
     <h1>Services & Checkout</h1>
-    <p>Choose from Birthday, Mother's Day, Father's Day, and Valentine's Day packages based on our posted package images and prices.</p>
+    <p>Choose from our Birthday, Mother's Day, Father's Day, and Valentine's Day packages designed for every budget and celebration style. Add thoughtful extras, complete your order in minutes, and let Knock Knock Saya deliver love and joy straight to your loved ones.</p>
+  </section>
+
+  <section class="info-band">
+    <h2>How ordering works</h2>
+    <p>Select a package, add recipient details, choose optional materials, and click checkout. Your order draft opens in email so you can send it directly for confirmation.</p>
   </section>
 
   <section class="grid" id="main-grid"></section>
